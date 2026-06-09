@@ -116,7 +116,7 @@ const OUTPUT_LANGS = [
 
 // ─── GROQ API CALL ───────────────────────────────────────────────
 async function callGroq(apiKey, reportType, rawData, outputLang, tone, audience) {
-  const res = await fetch("/.netlify/functions/generate-report", {
+  const res = await fetch("/api/generate-report", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ reportType, rawData, outputLang, tone, audience }),
