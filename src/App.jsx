@@ -1,15 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from './context/AuthContext'
 import AuthGate from './components/auth/AuthGate'
-async function validateLicense(key) {
-  const res = await fetch("/.netlify/functions/validate-key", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ key }),
-  });
-  const data = await res.json();
-  return data.valid;
-}
+
 
 const T = {
   en: {
@@ -140,10 +132,7 @@ export default function App() {
   if (!user) return <AuthGate />
   const [ui, setUi] = useState("en");
   const [apiKey, setApiKey] = useState(() => localStorage.getItem("groq_key") || "");
-  const [licensed, setLicensed] = useState(() => !!localStorage.getItem("license_key"));
-  const [licenseInput, setLicenseInput] = useState("");
-  const [licenseError, setLicenseError] = useState(false);
-  const [licenseLoading, setLicenseLoading] = useState(false);
+  const [licensed, setLicensed] = useState(true);
   const [showApiModal, setShowApiModal] = useState(false);
   const [apiInput, setApiInput] = useState("");
   const [showApiPwd, setShowApiPwd] = useState(false);
@@ -169,23 +158,7 @@ export default function App() {
     setShowApiModal(false);
     setApiInput("");
   };
-  const activateLicense = async () => {
-  setLicenseLoading(true);
-  setLicenseError(false);
-  const res = await fetch("/.netlify/functions/validate-key", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ key: licenseInput.trim() }),
-  });
-  const data = await res.json();
-  if (data.valid) {
-    localStorage.setItem("license_key", licenseInput.trim());
-    setLicensed(true);
-  } else {
-    setLicenseError(true);
-  }
-  setLicenseLoading(false);
-};
+  
 
   const generate = async () => {
     if (reportType === null || !rawData.trim()) return;
@@ -253,59 +226,7 @@ export default function App() {
       <div style={S.grid} />
       <div style={S.glow1} />
       <div style={S.glow2} />
-      {!licensed && (
-  <div style={{
-    position: "fixed", inset: 0, zIndex: 200,
-    background: "rgba(8,11,20,.97)", backdropFilter: "blur(8px)",
-    display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
-  }}>
-    <div style={{
-      background: "#0E1525", border: "1px solid rgba(201,168,76,.35)",
-      borderRadius: 18, padding: "44px 36px", maxWidth: 420, width: "100%",
-    }}>
-      <div style={{ fontSize: 36, textAlign: "center", marginBottom: 16 }}>🔐</div>
-      <h2 style={{ textAlign: "center", fontFamily: "Georgia,serif",
-        fontWeight: 400, fontSize: 22, color: "#C9A84C", margin: "0 0 8px" }}>
-        Enter License Key
-      </h2>
-      <p style={{ textAlign: "center", color: "#5A7080", fontSize: 13, margin: "0 0 28px" }}>
-        Enter the key you received after purchase
-      </p>
-      <input
-        value={licenseInput}
-        onChange={e => setLicenseInput(e.target.value)}
-        onKeyDown={e => e.key === "Enter" && activateLicense()}
-        placeholder="RAPP-XXXX-XXXX-XXXX"
-        style={{
-          width: "100%", padding: "13px 16px", boxSizing: "border-box",
-          background: "rgba(255,255,255,.03)",
-          border: licenseError ? "1px solid #E05555" : "1px solid rgba(255,255,255,.1)",
-          borderRadius: 10, color: "#E8DCC8", fontSize: 14,
-          outline: "none", fontFamily: "monospace", marginBottom: 8,
-          textAlign: "center", letterSpacing: 2,
-        }}
-      />
-      {licenseError && (
-        <p style={{ color: "#E05555", fontSize: 12, textAlign: "center", margin: "0 0 12px" }}>
-          ❌ Invalid key. Please try again.
-        </p>
-      )}
-      <button onClick={activateLicense}
-        disabled={!licenseInput.trim() || licenseLoading} style={{
-        width: "100%", padding: "13px",
-        background: licenseInput.trim()
-          ? "linear-gradient(135deg,#C9A84C,#A07830)"
-          : "rgba(201,168,76,.1)",
-        border: "none", borderRadius: 10,
-        color: licenseInput.trim() ? "#0A1020" : "#3A4A3A",
-        fontSize: 14, fontWeight: 700,
-        cursor: licenseInput.trim() ? "pointer" : "not-allowed",
-      }}>
-        {licenseLoading ? "Validating..." : "Activate"}
-      </button>
-    </div>
-  </div>
-)}
+     
 
       {false && (
         <div style={{
